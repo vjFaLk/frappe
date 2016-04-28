@@ -5,12 +5,12 @@ Now we can login and check if everything works.
 To start the development server, run `bench start`
 
 	$ bench start
-	13:58:51 web.1        | started with pid 22135
-	13:58:51 worker.1     | started with pid 22136
-	13:58:51 workerbeat.1 | started with pid 22137
-	13:58:52 web.1        |  * Running on http://0.0.0.0:8000/
-	13:58:52 web.1        |  * Restarting with reloader
-	13:58:52 workerbeat.1 | [2014-09-17 13:58:52,343: INFO/MainProcess] beat: Starting...
+	14:19:56 system           | watch.1 started (pid=21842)
+	14:19:56 system           | redis_socketio.1 started (pid=21837)
+	14:19:56 system           | worker_default.1 started (pid=21841)
+	14:19:56 system           | worker_long.1 started (pid=21849)
+	14:19:56 system           | web.1 started (pid=21844)
+
 
 You can now open your browser and go to `http://localhost:8000`. You should see this login page if all goes well:
 

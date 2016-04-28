@@ -1,5 +1,6 @@
 # Contributing to Frappe / ERPNext
 
+
 ## Reporting issues
 
 We only accept issues that are bug reports or feature requests. Bugs must be isolated and reproducible problems. Please read the following guidelines before opening any issue.
@@ -28,6 +29,14 @@ We only accept issues that are bug reports or feature requests. Bugs must be iso
 ## Pull Requests
 
 General guidelines for sending pull requests:
+
+#### PR to the right Branch
+
+Your Pull Request should be made to either of these branches: 
+
+* **develop** - This is an unstable branch for development purposes, it has bleeding edge features and fixes, but it's not recommended for production. Bug fixes and new features go here. 
+* **hotfix** - This is a branch dedicated to hotfixes on the master branch. Urgent bug fixes go here. 
+
 
 #### Don't Repeat Yourself (DRY)
 

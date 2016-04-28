@@ -1,6 +1,6 @@
-# Installing the Frappe Bench
+# Installing Bench
 
-Easiest way to setup frappe on a Unix Like system is to use frappe-bench. Read the detailed instructions on how to install using Frappe Bench.
+Easiest way to setup frappe on a Unix Like system is to use bench. Read the detailed instructions on how to install using Frappe Bench. Make sure to run the Development Setup.
 
 > [https://github.com/frappe/bench](https://github.com/frappe/bench)
 

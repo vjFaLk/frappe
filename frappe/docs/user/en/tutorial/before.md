@@ -2,7 +2,7 @@
 
 <p class="lead">A list of tools, technologies that will be very helpful for building apps in Frappe.</p>
 
-There are a number of good tutorials online and we found [CodeAcademy](http://www.codecademy.com/) to be the most beautiful ones out there here bunch of lessons you can learn from CodeAcademy
+There are a number of good tutorials online and we found [CodeAcademy's](http://www.codecademy.com/) to be the best out there.
 
 ---
 
@@ -44,5 +44,5 @@ If you are customizing Print templates, you need to learn the [Jinja Templating 
 
 ---
 
-When you are ready, [try building a sample application on Frappe]({{ docs_base_url }}/user/en/tutorial/app)
+When you are ready, [let's create a Frappe app]({{ docs_base_url }}/user/en/tutorial/app)
 
