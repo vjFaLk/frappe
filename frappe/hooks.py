@@ -63,7 +63,9 @@ calendars = ["Event"]
 
 on_session_creation = [
 	"frappe.core.doctype.communication.feed.login_feed",
-	"frappe.core.doctype.user.user.notifify_admin_access_to_system_manager"
+	"frappe.core.doctype.user.user.notifify_admin_access_to_system_manager",
+	"frappe.subscription.check_if_expired",
+	"frappe.subscription.reset_enabled_scheduler_events",
 ]
 
 # permissions
@@ -88,6 +90,9 @@ standard_queries = {
 }
 
 doc_events = {
+	"User": {
+		"validate": "frappe.subscription.validate_max_users"
+	},
 	"*": {
 		"after_insert": "frappe.email.doctype.email_alert.email_alert.trigger_email_alerts",
 		"validate": "frappe.email.doctype.email_alert.email_alert.trigger_email_alerts",
@@ -118,6 +123,7 @@ scheduler_events = {
 		'frappe.model.utils.list_settings.sync_list_settings'
 	],
 	"daily": [
+		"frappe.subscription.update_sizes"
 		"frappe.email.bulk.clear_outbox",
 		"frappe.desk.notifications.clear_notifications",
 		"frappe.core.doctype.scheduler_log.scheduler_log.set_old_logs_as_seen",
@@ -125,6 +131,10 @@ scheduler_events = {
 		"frappe.sessions.clear_expired_sessions",
 		"frappe.email.doctype.email_alert.email_alert.trigger_daily_alerts",
 		"frappe.async.remove_old_task_logs",
+		"frappe.subscription.disable_scheduler_on_expiry",
+		"frappe.subscription.restrict_scheduler_events_if_dormant",
+		
+
 	],
 	"daily_long": [
 		"frappe.integrations.doctype.dropbox_backup.dropbox_backup.take_backups_daily"
@@ -161,3 +171,4 @@ bot_parsers = [
 	'frappe.utils.bot.CountBot'
 ]
 
+before_write_file = "frappe.subscription.validate_max_space"
