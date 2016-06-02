@@ -1,20 +1,4 @@
 <div class="padding" style="max-width: 500px;">
-    <h3>Plan: {{ plan }}</h3>
-    {% if (plan!=="Free-Solo") { %}
-        <p>Expires on {{ frappe.datetime.global_date_format(expires_on) }}</p>
-    {% } %}
-    {% if (in_list(["Free", "Free-Solo"], plan) && __onload.allow_upgrade) { %}
-        <p>Need priority support, more users or space?
-            <a href="#upgrade" class="form-link">Upgrade</a></p>
-    {% } else if(plan==="Startup") { %}
-        <p>Need more users or space? <a href="#upgrade">Upgrade</a></p>
-    {% } else if(plan==="Small-Business") { %}
-        <p>Need more users or space? <a href="#upgrade">Upgrade</a></p>
-    {% } else if(plan==="Enterprise") { %}
-        <p>Need more users or space? <a href="#upgrade">Upgrade</a></p>
-    {% } else if(plan==="Unlimited") { %}
-        <p>Need more users or space? <a href="https://erpnext.com/pricing">Setup ERPNext on your own server</a></p>
-    {% } %}
     <h3>Users</h3>
     {% var users_percent = ((users / user_limit) * 100); %}
     <div class="progress">

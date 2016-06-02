@@ -329,6 +329,22 @@ def set_admin_password(context, admin_password):
 		finally:
 			frappe.destroy()
 
+
+@click.command('set-limit')
+@click.option('--site', help='site name')
+@click.argument('limit', type=click.Choice(['email', 'space', 'users']))
+@click.argument('value')
+@pass_context
+def set_limit(context, site, limit, value):
+	"Set user / space / email limit for a site"
+	from frappe.commands import get_site
+	from frappe.limits import set_limits
+	if not site:
+		site = get_site(context)
+	with frappe.init_site(site):
+		set_limits({limit+'_limit': int(value)})
+
+
 commands = [
 	add_system_manager,
 	backup,
@@ -344,5 +360,6 @@ commands = [
 	run_patch,
 	set_admin_password,
 	uninstall,
+	set_limit,
 	_use,
 ]

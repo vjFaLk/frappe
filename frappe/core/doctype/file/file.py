@@ -22,7 +22,7 @@ import requests
 import requests.exceptions
 import StringIO
 import mimetypes, imghdr
-from frappe.utils import get_files_path
+from frappe.utils import get_files_path, flt
 
 class FolderNotEmpty(frappe.ValidationError): pass
 
@@ -351,3 +351,34 @@ def check_file_permission(file_url):
 			return True
 
 	raise frappe.PermissionError
+
+
+def validate_space_limit(file_size):
+	"""Stop from writing file if max space limit is reached"""
+	from frappe.limits import get_limits
+	from frappe.installer import update_site_config
+	frappe_limits = get_limits()
+
+	if not frappe_limits or frappe_limits['space_limit']:
+		return
+
+	# In Gigabytes
+	space_limit = flt(flt(frappe_limits['space_limit']) * 1024, 2)
+
+	# in Kilobytes
+	used_space = flt(frappe_limits['files_size']) + flt(frappe_limits['backup_size']) + flt(frappe_limits['database_size'])
+	file_size = file_size / (1024.0**2)
+
+	# Stop from attaching file
+	if flt(used_space + file_size, 2) > space_limit:
+		frappe.throw(_("You have exceeded the max space of {0} for your plan. {1} or {2}.").format(
+			"<b>{0}MB</b>".format(cint(space_limit)) if (space_limit < 1024) else "<b>{0}GB</b>".format(frappe_limits['space_limit']),
+			'<a href="#usage-info">{0}</a>'.format(_("Click here to check your usage")),
+			'<a href="#upgrade">{0}</a>'.format(_("upgrade to a higher plan")),
+		), MaxFileSizeReachedError)
+
+	# update files size in frappe subscription
+	new_files_size = flt(frappe_limits['files_size']) + file_size
+	d = frappe.get_conf().get("limits")
+	d['files_size'] = new_files_size
+	update_site_config("limits", d, validate=False)

@@ -14,8 +14,9 @@ import frappe
 import json
 import schedule
 import time
+import os
 import frappe.utils
-from frappe.utils import get_sites
+from frappe.utils import get_sites, get_site_path
 from datetime import datetime
 from background_jobs import enqueue, get_jobs, queue_timeout
 
@@ -239,3 +240,54 @@ def scheduler_task(site, event, handler, now=False):
 		frappe.db.commit()
 
 	frappe.logger(__name__).info('ran {handler} for {site} for event: {event}'.format(handler=handler, site=site, event=event))
+
+
+def reset_enabled_scheduler_events(login_manager):
+	if login_manager.info.user_type == "System User":
+		try:
+			frappe.db.set_global('enabled_scheduler_events', None)
+		except MySQLdb.OperationalError, e:
+			if e.args[0]==1205:
+				frappe.get_logger().error("Error in reset_enabled_scheduler_events")
+			else:
+				raise
+		else:
+			dormant_file = get_site_path('dormant')
+			if os.path.exists(dormant_file):
+				os.remove(dormant_file)
+
+
+def disable_scheduler_on_expiry():
+	if has_expired():
+		disable_scheduler()
+
+
+def restrict_scheduler_events_if_dormant():
+	if is_dormant():
+		restrict_scheduler_events()
+		touch_file(get_site_path('dormant'))
+
+def restrict_scheduler_events(*args, **kwargs):
+	val = json.dumps(["daily", "daily_long", "weekly", "weekly_long", "monthly", "monthly_long"])
+	frappe.db.set_global('enabled_scheduler_events', val)
+
+		
+def disable_scheduler_on_expiry():
+	if has_expired():
+		from frappe.utils.scheduler import disable_scheduler
+		disable_scheduler()
+
+def is_dormant(since = 345600):
+	last_active = get_datetime(get_last_active())
+	# Get now without tz info
+	now = now_datetime().replace(tzinfo=None)
+	time_since_last_active = now - last_active
+	if time_since_last_active.total_seconds() > since:  # 4 days
+		return True
+	return False
+
+def get_last_active():
+	return frappe.db.sql("""select max(ifnull(last_active, "2000-01-01 00:00:00")) from `tabUser`
+		where user_type = 'System User' and name not in ({standard_users})"""\
+		.format(standard_users=", ".join(["%s"]*len(STANDARD_USERS))),
+		STANDARD_USERS)[0][0]
