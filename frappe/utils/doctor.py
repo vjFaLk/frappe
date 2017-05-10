@@ -11,7 +11,9 @@ def get_workers():
 		workers = Worker.all()
 		return workers
 
-# This is a new comment
+# That is a cAMMENT
+
+
 def purge_pending_jobs(event=None, site=None, queue=None):
 	"""
 	Purge tasks of the event event type. Passing 'all' will not purge all
