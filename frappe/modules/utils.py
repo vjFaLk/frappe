@@ -57,9 +57,9 @@ def export_customizations(module, doctype, sync_on_migrate=0):
 
 	add(doctype)
 
-	# add custom fields and property setters for all child tables
-	for d in frappe.get_meta(doctype).get_table_fields():
-		add(d.options)
+	# # add custom fields and property setters for all child tables
+	# for d in frappe.get_meta(doctype).get_table_fields():
+	# 	add(d.options)
 
 	folder_path = os.path.join(get_module_path(module), 'custom')
 	if not os.path.exists(folder_path):
