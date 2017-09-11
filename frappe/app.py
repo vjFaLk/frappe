@@ -197,5 +197,14 @@ def serve(port=8000, profile=False, site=None, sites_path='.'):
 		'SERVER_NAME': 'localhost:8000'
 	}
 
-	run_simple('0.0.0.0', int(port), application, use_reloader=True,
-		use_debugger=True, use_evalex=True, threaded=True)
+	in_test_env = os.environ.get('CI')
+	if in_test_env:
+		log = logging.getLogger('werkzeug')
+		log.setLevel(logging.ERROR)
+
+	run_simple('0.0.0.0', int(port), application,
+		use_reloader=not in_test_env,
+		use_debugger=not in_test_env,
+		use_evalex=not in_test_env,
+		reloader_type='stat',
+		threaded=True)
