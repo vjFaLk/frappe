@@ -511,7 +511,7 @@ frappe.ui.form.Grid = Class.extend({
 				}
 				
 				// attach formatter on refresh
-				if (df.fieldtype == 'Link' && !df.formatter) {
+				if (df.parent && df.fieldtype == 'Link' && !df.formatter) {
 					const docfield = frappe.meta.docfield_map[df.parent][df.fieldname];
 					if (docfield && docfield.formatter) {
 						df.formatter = docfield.formatter;
