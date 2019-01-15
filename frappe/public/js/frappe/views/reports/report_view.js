@@ -833,7 +833,13 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 			editable,
 			align,
 			format: (value, row, column, data) => {
-				return frappe.format(value, column.docfield, { always_show_decimals: true }, data);
+				const d = row.reduce((acc, curr) => {
+					if (!curr.column.docfield) return acc;
+					acc[curr.column.docfield.fieldname] = curr.content;
+					return acc;
+				}, {});
+
+				return frappe.format(value, column.docfield, { always_show_decimals: true }, d);
 			}
 		};
 	}
@@ -1056,7 +1062,8 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 								fields = fields.concat(values[cdt].map(f => [f, cdt]));
 							}
 
-							this.fields = fields;
+							// always keep name (ID) column
+							this.fields = [["name", this.doctype], ...fields];
 
 							this.fields.map(f => this.add_currency_column(f[0], f[1]));
 
