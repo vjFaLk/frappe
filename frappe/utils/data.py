@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 # IMPORTANT: only import safe functions as this module will be included in jinja environment
 import frappe
 import operator
-import re, urllib, datetime, math, time
+import re, datetime, math, time
 import babel.dates
 from babel.core import UnknownLocaleError
 from dateutil import parser
@@ -745,6 +745,9 @@ def get_link_to_form(doctype, name, label=None):
 
 	return """<a href="{0}">{1}</a>""".format(get_url_to_form(doctype, name), label)
 
+def get_absolute_url(doctype, name):
+	return "desk#Form/{0}/{1}".format(quoted(doctype), quoted(name))
+
 def get_url_to_form(doctype, name):
 	return get_url(uri = "desk#Form/{0}/{1}".format(quoted(doctype), quoted(name)))
 
@@ -835,7 +838,8 @@ def get_filter(doctype, f):
 		f.operator = "="
 
 	valid_operators = ("=", "!=", ">", "<", ">=", "<=", "like", "not like", "in", "not in",
-		"between", "descendants of", "ancestors of", "not descendants of", "not ancestors of")
+		"between", "descendants of", "ancestors of", "not descendants of", "not ancestors of", "is")
+
 	if f.operator.lower() not in valid_operators:
 		frappe.throw(frappe._("Operator must be one of {0}").format(", ".join(valid_operators)))
 
