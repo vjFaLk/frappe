@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  release:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npx semantic-release -b bloomstack-production -r https://github.com/vjfalk/frappe
+
+workflows:
+  version: 2
+  release_github:
+    jobs:
+      - release
