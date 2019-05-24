@@ -55,7 +55,12 @@ frappe.ui.form.ControlComment = frappe.ui.form.ControlTextEditor.extend({
 	},
 
 	submit() {
-		this.on_submit && this.on_submit(this.get_value());
+		// return submit promise
+		if (this.on_submit) {
+			return this.on_submit(this.get_value());
+		} else {
+			return Promise.resolve();
+		}
 	},
 
 	update_state() {
