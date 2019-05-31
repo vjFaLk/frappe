@@ -41,6 +41,7 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 	setup_view() {
 		this.setup_columns();
 		this.bind_charts_button();
+		super.setup_new_doc_event();
 	}
 
 	setup_result_area() {
@@ -228,6 +229,7 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 			checkboxColumn: true,
 			inlineFilters: true,
 			cellHeight: 35,
+			direction: frappe.utils.is_rtl() ? 'rtl' : 'ltr',
 			events: {
 				onRemoveColumn: (column) => {
 					this.remove_column_from_datatable(column);
@@ -509,7 +511,20 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 					.then((updated_doc) => {
 						const _data = this.data.find(d => d.name === updated_doc.name);
 						for (let field in _data) {
-							_data[field] = updated_doc[field];
+							if (field.includes(':')) {
+								// child table field
+								const [cdt, _field] = field.split(':');
+								const cdt_row = Object.keys(updated_doc)
+									.filter(key => Array.isArray(updated_doc[key]) && updated_doc[key][0].doctype === cdt)
+									.map(key => updated_doc[key])
+									.map(a => a[0])
+									.filter(cdoc => cdoc.name === _data[cdt + ':name'])[0];
+								if (cdt_row) {
+									_data[field] = cdt_row[_field];
+								}
+							} else {
+								_data[field] = updated_doc[field];
+							}
 						}
 					})
 					.then(() => this.refresh_charts());
@@ -720,9 +735,7 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 		let out = {};
 
 		const standard_fields_filter = df =>
-			!in_list(frappe.model.no_value_type, df.fieldtype) &&
-			!df.report_hide && df.fieldname !== 'naming_series' &&
-			!df.hidden;
+			!in_list(frappe.model.no_value_type, df.fieldtype) && !df.report_hide;
 
 		let doctype_fields = frappe.meta.get_docfields(this.doctype).filter(standard_fields_filter);
 
@@ -798,7 +811,20 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 	setup_columns() {
 		const hide_columns = ['docstatus'];
 		const fields = this.fields.filter(f => !hide_columns.includes(f[0]));
+
+		// apply previous column width
+		let column_widths = null;
+		if (this.columns) {
+			column_widths = this.get_column_widths();
+		}
 		this.columns = fields.map(f => this.build_column(f)).filter(Boolean);
+
+		if (column_widths) {
+			this.columns = this.columns.map(column => {
+				column.width = column_widths[column.id] || column.width;
+				return column;
+			});
+		}
 	}
 
 	build_column(c) {

@@ -30,7 +30,18 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 	show() {
 		if (!this.has_permissions()) {
 			frappe.set_route('');
-			frappe.msgprint(__(`Not permitted to view ${this.doctype}`));
+			frappe.msgprint({
+				message: __(`Not permitted to view ${this.doctype}`),
+				primary_action: {
+					label: "Request Access",
+					action: () => {
+						frappe.new_doc("Permission Request", {
+							user: frappe.session.user,
+							doc_type: this.doctype
+						});
+					}
+				}
+			})
 			return;
 		}
 
@@ -642,7 +653,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			.includes(user) ? '' : 'bold';
 
 		let subject_html = `
-			<input class="level-item list-row-checkbox hidden-xs" type="checkbox" data-name="${doc.name}">
+			<input class="level-item list-row-checkbox hidden-xs" type="checkbox" data-name="${escape(doc.name)}">
 			<span class="level-item" style="margin-bottom: 1px;">
 				<i class="octicon octicon-heart like-action ${heart_class}"
 					data-name="${doc.name}" data-doctype="${this.doctype}"
@@ -898,7 +909,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 
 	get_checked_items(only_docnames) {
 		const docnames = Array.from(this.$checks || [])
-			.map(check => cstr($(check).data().name));
+			.map(check => cstr(unescape($(check).data().name)));
 
 		if (only_docnames) return docnames;
 

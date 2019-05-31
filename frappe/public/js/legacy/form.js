@@ -615,7 +615,7 @@ _f.Frm.prototype.trigger_link_fields = function() {
 	// trigger link fields which have default values set
 	if (this.is_new() && this.doc.__run_link_triggers) {
 		$.each(this.fields_dict, function(fieldname, field) {
-			if (field.df.fieldtype=="Link" && this.doc[fieldname]) {
+			if (in_list(['Link', 'Dynamic Link'], field.df.fieldtype) && this.doc[fieldname]) {
 				// triggers add fetch, sets value in model and runs triggers
 				field.set_value(this.doc[fieldname]);
 			}
@@ -714,22 +714,29 @@ _f.Frm.prototype._save = function(save_action, callback, btn, on_error, resolve,
 	if((!this.meta.in_dialog || this.in_form) && !this.meta.istable) {
 		frappe.utils.scroll_to(0);
 	}
-	var after_save = function(r) {
-		if(!r.exc) {
-			if (["Save", "Update", "Amend"].indexOf(save_action)!==-1) {
+	var after_save = function (r) {
+		// init add comment promise to handle promise chain on success or fail
+		let add_new_comment = Promise.resolve();
+
+		if (!r.exc) {
+			if (["Save", "Update", "Amend"].indexOf(save_action) !== -1) {
 				frappe.utils.play_sound("click");
 			}
 
 			me.script_manager.trigger("after_save");
+			// wait for comment promise to resolve
+			add_new_comment = me.timeline.comment_area.submit();
 			me.refresh();
 		} else {
-			if(on_error) {
+			if (on_error) {
 				on_error();
 				reject();
 			}
 		}
+
 		callback && callback(r);
-		resolve();
+		// chains the save promise with add new comment promise
+		resolve(add_new_comment);
 	};
 
 	var fail = () => {

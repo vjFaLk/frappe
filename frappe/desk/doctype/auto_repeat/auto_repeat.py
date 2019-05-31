@@ -19,9 +19,6 @@ month_map = {'Monthly': 1, 'Quarterly': 3, 'Half-yearly': 6, 'Yearly': 12}
 
 
 class AutoRepeat(Document):
-	def onload(self):
-		self.set_onload("auto_repeat_schedule", self.get_auto_repeat_schedule())
-
 	def validate(self):
 		self.update_status()
 		self.validate_reference_doctype()
@@ -34,12 +31,21 @@ class AutoRepeat(Document):
 		validate_template(self.message or "")
 
 	def before_submit(self):
+		start_date_copy = self.start_date
+		today_copy = add_days(today(), -1)
+
+		if start_date_copy <= today_copy:
+			start_date_copy = today_copy
+
 		if not self.next_schedule_date:
 			self.next_schedule_date = get_next_schedule_date(
-				self.start_date, self.frequency, self.repeat_on_day)
+				start_date_copy, self.frequency, self.repeat_on_day)
 
 	def on_submit(self):
 		self.update_auto_repeat_id()
+
+	def on_cancel(self):
+		self.update_status()
 
 	def on_update_after_submit(self):
 		self.validate_dates()
@@ -103,6 +109,9 @@ class AutoRepeat(Document):
 		if status and status != 'Resumed':
 			self.status = status
 
+		if self.docstatus == 2:
+			self.db_set("status", self.status)
+
 	def get_auto_repeat_schedule(self):
 		schedule_details = []
 		start_date_copy = getdate(self.start_date)
@@ -116,14 +125,15 @@ class AutoRepeat(Document):
 			days = 60 if self.frequency in ['Daily', 'Weekly'] else 365
 			end_date_copy = add_days(today_copy, days)
 
+		start_date_copy = get_next_schedule_date(start_date_copy, self.frequency, self.repeat_on_day)
 		while (getdate(start_date_copy) < getdate(end_date_copy)):
-			start_date_copy = get_next_schedule_date(start_date_copy, self.frequency, self.repeat_on_day)
 			row = {
 				"reference_document" : self.reference_document,
 				"frequency" : self.frequency,
 				"next_scheduled_date" : start_date_copy
 			}
 			schedule_details.append(row)
+			start_date_copy = get_next_schedule_date(start_date_copy, self.frequency, self.repeat_on_day)
 
 		return schedule_details
 
