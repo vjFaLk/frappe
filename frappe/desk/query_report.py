@@ -242,7 +242,15 @@ def get_prepared_report_result(report, filters, dn="", user=None):
 		doc = frappe.get_doc("Prepared Report", dn)
 	else:
 		# Only look for completed prepared reports with given filters.
-		doc_list = frappe.get_all("Prepared Report", filters={"status": "Completed", "filters": json.dumps(filters), "owner": user})
+		doc_list = frappe.get_all("Prepared Report",
+			filters={
+				"status": "Completed",
+				"filters": json.dumps(filters),
+				"owner": user,
+				"report_name": report.report_name
+			}
+		)
+
 		if doc_list:
 			# Get latest
 			doc = frappe.get_doc("Prepared Report", doc_list[0])
@@ -256,13 +264,17 @@ def get_prepared_report_result(report, filters, dn="", user=None):
 			data = json.loads(uncompressed_content)
 			if data:
 				columns = json.loads(doc.columns) if doc.columns else data[0]
+
 				for column in columns:
-					column["label"] = _(column["label"])
+					if isinstance(column, dict):
+						column["label"] = _(column["label"])
+
 				latest_report_data = {
 					"columns": columns,
 					"result": data
 				}
 		except Exception:
+			frappe.log_error(frappe.get_traceback())
 			frappe.delete_doc("Prepared Report", doc.name)
 			frappe.db.commit()
 			doc = None
@@ -331,8 +343,10 @@ def build_xlsx_data(columns, data, visible_idx):
 				for idx in range(len(data.columns)):
 					label = columns[idx]["label"]
 					fieldname = columns[idx]["fieldname"]
-
-					row_data.append(row.get(fieldname, row.get(label, "")))
+					cell_value = row.get(fieldname, row.get(label, ""))
+					if 'indent' in row and idx == 0:
+						cell_value = ('    ' * cint(row['indent'])) + cell_value
+					row_data.append(cell_value)
 			else:
 				row_data = row
 
