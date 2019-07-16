@@ -732,8 +732,7 @@ _f.Frm.prototype._save = function(save_action, callback, btn, on_error, resolve,
 		}
 
 		callback && callback(r);
-		// chains the save promise with add new comment promise
-		resolve(add_new_comment);
+		resolve();
 	};
 
 	var fail = () => {
