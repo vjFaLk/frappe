@@ -19,6 +19,18 @@ jobs:
             --header 'x-rundeck-auth-token: '"$RUNDECK_TOKEN"'' \
             --data '{ "options" : { "BenchName" : "frappe-demo" }}'
 
+  deploy_v12_staging:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - run:
+          name: Trigger rundeck deploy
+          command: |
+            curl --request POST \
+            --url "$RUNDECK_V12_JOB_URL" \
+            --header 'content-type: application/json' \
+            --header 'x-rundeck-auth-token: '"$RUNDECK_TOKEN"''
+
 workflows:
   version: 2
   workflow:
@@ -27,6 +39,10 @@ workflows:
           filters:
             branches:
               only: bloomstack-staging
+      - deploy_v12_staging:
+          filters:
+            branches:
+              only: bloomstack-v12-staging
       - release:
           filters:
             branches:
