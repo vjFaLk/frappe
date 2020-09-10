@@ -8,7 +8,7 @@ def get_first_party_apps():
 	"""Get list of all apps under orgs: frappe. erpnext from GitHub"""
 	apps = []
 	for org in ["frappe", "erpnext"]:
-		req = requests.get(f"https://api.github.com/users/{org}/repos", {"type": "sources", "per_page": 200})
+		req = requests.get("https://api.github.com/users/{0}/repos".format(org), {"type": "sources", "per_page": 200})
 		if req.ok:
 			apps.extend([x["name"] for x in req.json()])
 	return apps
@@ -23,6 +23,15 @@ def add_line_after(function):
 	def empty_line(*args, **kwargs):
 		result = function(*args, **kwargs)
 		print()
+		return result
+	return empty_line
+
+
+def add_line_before(function):
+	"""Adds an extra line to STDOUT before the execution of a function this decorates"""
+	def empty_line(*args, **kwargs):
+		print()
+		result = function(*args, **kwargs)
 		return result
 	return empty_line
 

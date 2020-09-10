@@ -1,8 +1,10 @@
 function prettyDate(date, mini) {
 	if (!date) return '';
 
-	if (typeof (date) == "string")
+	if (typeof (date) == "string") {
+		date = frappe.datetime.convert_to_user_tz(date);
 		date = new Date((date || "").replace(/-/g, "/").replace(/[TZ]/g, " ").replace(/\.[0-9]*/, ""));
+	}
 
 	let diff = (((new Date()).getTime() - date.getTime()) / 1000);
 	let day_diff = Math.floor(diff / 86400);
@@ -21,20 +23,20 @@ function prettyDate(date, mini) {
 			}
 		} else {
 			if (day_diff < 7) {
-				return __("{0} D", [day_diff]);
+				return __("{0} d", [day_diff]);
 			} else if (day_diff < 31) {
-				return __("{0} W", [Math.ceil(day_diff / 7)]);
+				return __("{0} w", [Math.ceil(day_diff / 7)]);
 			} else if (day_diff < 365) {
 				return __("{0} M", [Math.ceil(day_diff / 30)]);
 			} else {
-				return __("{0} Y", [Math.ceil(day_diff / 365)]);
+				return __("{0} y", [Math.ceil(day_diff / 365)]);
 			}
 		}
 	} else {
 		// Return long format of time difference
 		if (day_diff == 0) {
 			if (diff < 60) {
-				return __("Just now");
+				return __("just now");
 			} else if (diff < 120) {
 				return __("1 minute ago");
 			} else if (diff < 3600) {
@@ -46,7 +48,7 @@ function prettyDate(date, mini) {
 			}
 		} else {
 			if (day_diff == 1) {
-				return __("Yesterday");
+				return __("yesterday");
 			} else if (day_diff < 7) {
 				return __("{0} days ago", [day_diff]);
 			} else if (day_diff < 14) {
