@@ -192,10 +192,6 @@ def log(method, message=None):
 	frappe.db.rollback()
 	frappe.db.begin()
 
-	if not frappe.conf.developer_mode:
-		for fn in frappe.get_hooks("exception_handlers"):
-			frappe.get_attr(fn)()
-
 	d = frappe.new_doc("Error Log")
 	d.method = method
 	d.error = message

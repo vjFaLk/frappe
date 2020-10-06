@@ -139,6 +139,11 @@ def start_worker(queue=None, quiet = False):
 	with frappe.init_site():
 		# empty init is required to get redis_queue from common_site_config.json
 		redis_connection = get_redis_conn()
+		try:
+			from sentry.utils import init_sentry
+			init_sentry()
+		except:
+			pass
 
 	if os.environ.get('CI'):
 		setup_loghandlers('ERROR')
