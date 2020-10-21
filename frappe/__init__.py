@@ -1530,6 +1530,11 @@ def logger(module=None, with_more_info=True):
 
 def log_error(message=None, title=None):
 	'''Log error to Error Log'''
+	try:
+		from sentry.utils import capture_exception
+		capture_exception()
+	except:
+		pass
 	return get_doc(dict(doctype='Error Log', error=as_unicode(message or get_traceback()),
 		method=title)).insert(ignore_permissions=True)
 
