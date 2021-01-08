@@ -1,0 +1,34 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    working_directory: ~/
+    docker:
+      - image: frappe/bench
+        environment:
+          CI: circleci # Frappe checks if the variable exists or not, the contents don't matter
+      - image: bitnami/mariadb:10.3
+        environment:
+          MARIADB_ROOT_PASSWORD: 123
+          MARIADB_CHARACTER_SET: utf8mb4
+          MARIADB_COLLATE: utf8mb4_unicode_ci
+      - image: redis:alpine
+    steps:
+      - checkout:
+          path: /tmp/frappe
+      - run:
+          name: Setup Bench
+          command: |
+            chmod +x /tmp/frappe/.circleci/setup.sh
+            bash /tmp/frappe/.circleci/setup.sh
+      - run:
+          name: Run Tests
+          working_directory: ~/frappe-bench
+          command : |
+            bench serve --port 8000 &
+            bench --site test_site run-tests
+
+workflows:
+  main:
+    jobs:
+      - build-and-test

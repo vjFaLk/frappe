@@ -1,0 +1,19 @@
+{
+    "auto_update": false,
+    "background_workers": 1,
+    "db_host": "127.0.0.1",
+    "file_watcher_port": 6787,
+    "frappe_user": "frappe",
+    "gunicorn_workers": 9,
+    "rebase_on_pull": false,
+    "redis_cache": "redis://127.0.0.1:6379",
+    "redis_queue": "redis://127.0.0.1:6379",
+    "redis_socketio": "redis://127.0.0.1:6379",
+    "restart_supervisor_on_update": false,
+    "restart_systemd_on_update": false,
+    "serve_default_site": true,
+    "shallow_clone": true,
+    "socketio_port": 9000,
+    "webserver_port": 8000,
+    "developer_mode": 1
+   }

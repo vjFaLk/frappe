@@ -1,0 +1,20 @@
+{
+    "product": "ParsimonyFREE",
+    "business_name": "Baba Yaga Industries",
+    "subdomain": "seller",
+    "first_name": "John",
+    "last_name": "Wick",
+    "email": "johnwick@thecontinental.com",
+    "phone": "",
+    "address_line_1": "2125 1st Ave",
+    "address_line_2": "",
+    "city": "Seattle",
+    "state": "Washington",
+    "postal_code": "98121",
+    "country": "United States",
+    "timezone": "America/Los_Angeles",
+    "seller_id": "SELLERID",
+    "mws_auth_token": "MWSAUTH",
+    "coupon_code": "",
+    "customer": "Parsimony Seller"
+}
