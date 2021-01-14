@@ -26,6 +26,7 @@ jobs:
           working_directory: ~/frappe-bench
           command : |
             bench serve --port 8000 &
+            bench worker --queue default &
             bench --site test_site run-tests
 
 workflows:
