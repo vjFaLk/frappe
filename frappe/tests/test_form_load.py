@@ -7,7 +7,7 @@ from frappe.desk.form.load import getdoctype, getdoc
 from frappe.core.page.permission_manager.permission_manager import update, reset, add
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 
-test_dependencies = ['Blog Category', 'Blogger']
+test_dependencies = ['Blog Category', 'Blogger', 'Role']
 
 class TestFormLoad(unittest.TestCase):
 	def test_load(self):
