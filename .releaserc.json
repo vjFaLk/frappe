@@ -1,0 +1,14 @@
+{
+    "branch": "parsimony-production",
+    "repositoryUrl": "https://github.com/ParsimonyGit/frappe",
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/github",
+            {
+                "successComment": false
+            }
+        ]
+    ]
+}
