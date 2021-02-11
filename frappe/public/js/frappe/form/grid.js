@@ -759,6 +759,7 @@ export default class Grid {
 	}
 
 	setup_allow_bulk_edit() {
+		let me = this;
 		if (this.frm && this.frm.get_docfield(this.df.fieldname).allow_bulk_edit) {
 			// download
 			this.setup_download();
@@ -773,8 +774,7 @@ export default class Grid {
 						var data = frappe.utils.csv_to_array(frappe.utils.get_decoded_string(file.dataurl));
 						// row #2 contains fieldnames;
 						var fieldnames = data[2];
-
-						this.frm.clear_table(this.df.fieldname);
+						me.frm.clear_table(me.df.fieldname);
 						$.each(data, (i, row) => {
 							if (i > 6) {
 								var blank_row = true;
@@ -786,10 +786,10 @@ export default class Grid {
 								});
 
 								if (!blank_row) {
-									var d = this.frm.add_child(this.df.fieldname);
+									var d = me.frm.add_child(me.df.fieldname);
 									$.each(row, (ci, value) => {
 										var fieldname = fieldnames[ci];
-										var df = frappe.meta.get_docfield(this.df.options, fieldname);
+										var df = frappe.meta.get_docfield(me.df.options, fieldname);
 
 										// convert date formatting
 										if (df.fieldtype==="Date" && value) {
@@ -806,7 +806,7 @@ export default class Grid {
 							}
 						});
 
-						this.frm.refresh_field(this.df.fieldname);
+						me.frm.refresh_field(me.df.fieldname);
 						frappe.msgprint({message: __('Table updated'), title: __('Success'), indicator: 'green'});
 					}
 				});
