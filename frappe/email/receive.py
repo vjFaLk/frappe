@@ -286,7 +286,8 @@ class EmailServer:
 			self.seen_status.update({ uid: "UNSEEN" })
 
 	def has_login_limit_exceeded(self, e):
-		return "-ERR Exceeded the login limit" in strip(cstr(e.message))
+		error = getattr(e, "message", e)
+		return "-ERR Exceeded the login limit" in strip(cstr(error))
 
 	def is_temporary_system_problem(self, e):
 		messages = (
